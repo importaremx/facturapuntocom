@@ -1,7 +1,7 @@
 {
     "name": "importaremx/facturapuntocom",
     "description": "Api Client para la api de factura.com",
-    "license": "license",
+    "license": "GPL-1.0-or-later",
     "authors": [
         {
             "name": "Geovanni Simuta",
