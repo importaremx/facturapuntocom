@@ -3,6 +3,7 @@
 namespace Importaremx\Facturapuntocom;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Filesystem\Filesystem;
 
 class FacturapuntocomServiceProvider extends ServiceProvider
 {
@@ -11,11 +12,12 @@ class FacturapuntocomServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(): void
+    public function boot(Filesystem $filesystem): void
     {
+
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'importaremx');
         // $this->loadViewsFrom(__DIR__.'/../resources/views', 'importaremx');
-        // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
 
         // Publishing is only necessary when using the CLI.
@@ -61,6 +63,10 @@ class FacturapuntocomServiceProvider extends ServiceProvider
             __DIR__.'/../config/facturapuntocom.php' => config_path('facturapuntocom.php'),
         ], 'facturapuntocom.config');
 
+        $this->publishes([
+            __DIR__.'/../database/migrations/' => database_path('migrations')
+        ], 'facturapuntocom.migrations');
+
         // Publishing the views.
         /*$this->publishes([
             __DIR__.'/../resources/views' => base_path('resources/views/vendor/importaremx'),
@@ -79,4 +85,5 @@ class FacturapuntocomServiceProvider extends ServiceProvider
         // Registering package commands.
         // $this->commands([]);
     }
+
 }
