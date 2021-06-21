@@ -126,7 +126,7 @@ class Facturapuntocom
             "Receptor.ResidenciaFiscal" => "string",
             "TipoDocumento" => [
                 "required",
-                Rule::in($this->tipos_documento)
+                "in:".implode(",",$this->tipos_documento)
             ],
 
             "Conceptos" => "array|required",
@@ -137,12 +137,12 @@ class Facturapuntocom
             "Conceptos.*.ClaveUnidad" => [
                 "string",
                 "required",
-                Rule::in(array_keys($this->catalogo_unidad_medida))
+                "in:".implode(",",array_keys($this->catalogo_unidad_medida))
             ],
             "Conceptos.*.Unidad" => [
                 "string",
                 "required",
-                Rule::in(array_values($this->catalogo_unidad_medida))
+                "in:".implode(",",array_values($this->catalogo_unidad_medida))
             ],
             "Conceptos.*.ValorUnitario" => "numeric|required",
             "Conceptos.*.Descripcion" => "string|required",
@@ -155,12 +155,12 @@ class Facturapuntocom
             "Conceptos.*.Impuestos.Traslados.*.Impuesto" => [
                 "string",
                 "required",
-                Rule::in(array_keys($this->catalogo_impuesto_traslados))
+                "in:".implode(",",array_keys($this->catalogo_impuesto_traslados))
             ],
             "Conceptos.*.Impuestos.Traslados.*.TipoFactor" => [
                 "string",
                 "required",
-                Rule::in($this->catalogo_tipo_factor)
+                "in:".implode(",",$this->catalogo_tipo_factor)
             ],
             "Conceptos.*.Impuestos.Traslados.*.TasaOCuota" => "numeric|required",
             "Conceptos.*.Impuestos.Traslados.*.Importe" => "numeric|required|min:1",
@@ -170,12 +170,12 @@ class Facturapuntocom
             "Conceptos.*.Impuestos.Retenidos.*.Impuesto" => [
                 "string",
                 "required",
-                Rule::in(array_keys($this->catalogo_impuesto_retenciones))
+                "in:".implode(",",array_keys($this->catalogo_impuesto_retenciones))
             ],
             "Conceptos.*.Impuestos.Retenidos.*.TipoFactor" => [
                 "string",
                 "required",
-                Rule::in($this->catalogo_tipo_factor)
+                "in:".implode(",",$this->catalogo_tipo_factor)
             ],
             "Conceptos.*.Impuestos.Retenidos.*.TasaOCuota" => "numeric|required",
             "Conceptos.*.Impuestos.Retenidos.*.Importe" => "numeric|required|min:1",
@@ -184,7 +184,7 @@ class Facturapuntocom
             "Conceptos.*.Impuestos.Locales.*.Impuesto" => [
                 "string",
                 "required",
-                Rule::in($this->impuestos_locales)
+                "in:".implode(",",$this->impuestos_locales)
             ],
             "Conceptos.*.Impuestos.Locales.*.TasaOCuota" => "numeric|required",
 
@@ -199,7 +199,7 @@ class Facturapuntocom
             "Conceptos.*.Partes.*.unidad" => [
                 "string",
                 "required",
-                Rule::in(array_values($this->catalogo_unidad_medida))
+                "in:".implode(",",array_values($this->catalogo_unidad_medida))
             ],
             "Conceptos.*.Partes.*.ValorUnitario" => "numeric|required",
             "Conceptos.*.Partes.*.Descripcion" => "string|required",
@@ -207,37 +207,37 @@ class Facturapuntocom
             "UsoCFDI" => [
                 "string",
                 "required",
-                Rule::in(array_keys($this->catalogo_uso_cfdi))
+                "in:".implode(",",array_keys($this->catalogo_uso_cfdi))
             ],
 
             "Serie" => [
                 "integer",
                 "required",
-                Rule::in(array_keys($this->series_disponibles))
+                "in:".implode(",",array_keys($this->series_disponibles))
             ],
             "FormaPago" => [
                 "string",
                 "required",
-                Rule::in(array_keys($this->catalogo_forma_pago))
+                "in:".implode(",",array_keys($this->catalogo_forma_pago))
             ],
             "MetodoPago" => [
                 "string",
                 "required",
-                Rule::in(array_keys($this->catalogo_metodo_pago))
+                "in:".implode(",",array_keys($this->catalogo_metodo_pago))
             ],
             "CondicionesDePago" => "string|required|min:1:max:1000",
             "CfdiRelacionados" => "array",
             "CfdiRelacionados.*.TipoRelacion" => [
                 "string",
                 "required",
-                Rule::in(array_keys($this->catalogo_tipo_relacion))
+                "in:".implode(",",array_keys($this->catalogo_tipo_relacion))
             ],
             "CfdiRelacionados.*.UUID" => "array|required",
             "CfdiRelacionados.*.UUID.*" => "string",
             "Moneda" => [
                 "string",
                 "required",
-                Rule::in(array_keys($this->catalogo_moneda))
+                "in:".implode(",",array_keys($this->catalogo_moneda))
             ],
             "NumOrder" => "string",
             "Fecha" => "date",

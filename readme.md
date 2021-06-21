@@ -79,7 +79,7 @@ Para modificar los valores por default del trait se puede agregar en el modelo l
 
         La variable $rfc_field indica qué atributo del modelo será tomado como RFC del contribuyente, por default tiene el valor 'rfc', pero lo puede modificar como se muestra en la siguiente linea
         
-        $this->$rfc_field = "rfc";
+        $this->rfc_field = "rfc";
 
         Para hacer uso de la relacion "cfdis", que obtiene todos los CFDIS generados para este usuario, se debe configurar la relacion polimorfica,
         ejemplo
@@ -101,7 +101,7 @@ Para modificar los valores por default del trait se puede agregar en el modelo l
             "apellidos" => $this->apellidos,
             "email" => "Tambien se pueden agregar valores de esta forma",
             "email2" => function(){
-            	return "valor"
+            	return "valor";
             	},
             "email3" => "otroemail3@email.com",
             "telefono" => "9612547499",
