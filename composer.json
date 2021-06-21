@@ -11,8 +11,8 @@
     "homepage": "https://github.com/importaremx/facturapuntocom",
     "keywords": ["Laravel", "Facturapuntocom","factura.com"],
     "require": {
-        "illuminate/support": "~7|~8",
-        "guzzlehttp/guzzle": "^6.5",
+        "illuminate/support": "~5|~7|~8",
+        "guzzlehttp/guzzle": "^6",
         "laravel/framework": "~5|~6"
     },
     "require-dev": {
