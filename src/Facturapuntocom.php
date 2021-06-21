@@ -305,7 +305,8 @@ class Facturapuntocom
 
             return [false,$errors];
         }else{
-            return [true,$validator->validated()];
+            //return [true,$validator->validated()];
+            return [true,$data];
         }
     }
 
