@@ -35,6 +35,13 @@ class Facturapuntocom
 
     private $rules_for_client;
     private $rules_for_cfdi;
+    private $rules_for_related_cfdis;
+    private $rules_for_concepts;
+    private $rules_for_concept_parts;
+    private $rules_for_taxes;
+    private $rules_for_transferred_taxes;
+    private $rules_for_withheld_taxes;
+    private $rules_for_local_taxes;
 
     private $tipos_documento = [
         "factura",
@@ -130,79 +137,6 @@ class Facturapuntocom
             ],
 
             "Conceptos" => "array|required",
-
-            "Conceptos.*.ClaveProdServ" => "string|required",
-            "Conceptos.*.NoIdentificacion" => "string",
-            "Conceptos.*.Cantidad" => "integer|required",
-            "Conceptos.*.ClaveUnidad" => [
-                "string",
-                "required",
-                "in:".implode(",",array_keys($this->catalogo_unidad_medida))
-            ],
-            "Conceptos.*.Unidad" => [
-                "string",
-                "required",
-                "in:".implode(",",array_values($this->catalogo_unidad_medida))
-            ],
-            "Conceptos.*.ValorUnitario" => "numeric|required",
-            "Conceptos.*.Descripcion" => "string|required",
-            "Conceptos.*.Descuento" => "string",
-            
-            "Conceptos.*.Impuestos" => "array",
-            
-            "Conceptos.*.Impuestos.Traslados" => "array",
-            "Conceptos.*.Impuestos.Traslados.*.Base" => "numeric|required",
-            "Conceptos.*.Impuestos.Traslados.*.Impuesto" => [
-                "string",
-                "required",
-                "in:".implode(",",array_keys($this->catalogo_impuesto_traslados))
-            ],
-            "Conceptos.*.Impuestos.Traslados.*.TipoFactor" => [
-                "string",
-                "required",
-                "in:".implode(",",$this->catalogo_tipo_factor)
-            ],
-            "Conceptos.*.Impuestos.Traslados.*.TasaOCuota" => "numeric|required",
-            "Conceptos.*.Impuestos.Traslados.*.Importe" => "numeric|required|min:1",
-            
-            "Conceptos.*.Impuestos.Retenidos" => "array",
-            "Conceptos.*.Impuestos.Retenidos.*.Base" => "numeric|required",
-            "Conceptos.*.Impuestos.Retenidos.*.Impuesto" => [
-                "string",
-                "required",
-                "in:".implode(",",array_keys($this->catalogo_impuesto_retenciones))
-            ],
-            "Conceptos.*.Impuestos.Retenidos.*.TipoFactor" => [
-                "string",
-                "required",
-                "in:".implode(",",$this->catalogo_tipo_factor)
-            ],
-            "Conceptos.*.Impuestos.Retenidos.*.TasaOCuota" => "numeric|required",
-            "Conceptos.*.Impuestos.Retenidos.*.Importe" => "numeric|required|min:1",
-            
-            "Conceptos.*.Impuestos.Locales" => "array",
-            "Conceptos.*.Impuestos.Locales.*.Impuesto" => [
-                "string",
-                "required",
-                "in:".implode(",",$this->impuestos_locales)
-            ],
-            "Conceptos.*.Impuestos.Locales.*.TasaOCuota" => "numeric|required",
-
-            "Conceptos.*.NumeroPedimento" => "string",
-            "Conceptos.*.Predial" => "string",
-            
-            "Conceptos.*.Partes" => "array",
-
-            "Conceptos.*.Partes.*.ClaveProdServ" => "string|required",
-            "Conceptos.*.Partes.*.NoIdentificacion" => "string",
-            "Conceptos.*.Partes.*.Cantidad" => "integer|required",
-            "Conceptos.*.Partes.*.unidad" => [
-                "string",
-                "required",
-                "in:".implode(",",array_values($this->catalogo_unidad_medida))
-            ],
-            "Conceptos.*.Partes.*.ValorUnitario" => "numeric|required",
-            "Conceptos.*.Partes.*.Descripcion" => "string|required",
             
             "UsoCFDI" => [
                 "string",
@@ -227,13 +161,7 @@ class Facturapuntocom
             ],
             "CondicionesDePago" => "string|required|min:1:max:1000",
             "CfdiRelacionados" => "array",
-            "CfdiRelacionados.*.TipoRelacion" => [
-                "string",
-                "required",
-                "in:".implode(",",array_keys($this->catalogo_tipo_relacion))
-            ],
-            "CfdiRelacionados.*.UUID" => "array|required",
-            "CfdiRelacionados.*.UUID.*" => "string",
+
             "Moneda" => [
                 "string",
                 "required",
@@ -245,7 +173,131 @@ class Facturapuntocom
             "Cuenta" => "string",
             "EnviarCorreo" => "boolean",
             "LugarExpedicion" => "string,size:5"
+        ];
 
+        $this->rules_for_related_cfdis = [
+            "TipoRelacion" => [
+                "string",
+                "required",
+                "in:".implode(",",array_keys($this->catalogo_tipo_relacion))
+            ],
+            "UUID" => "array|required",
+        ];
+
+        $this->rules_for_concepts = [
+
+            "ClaveProdServ" => "string|required",
+            "NoIdentificacion" => "string",
+            "Cantidad" => "integer|required",
+            "ClaveUnidad" => [
+                "string",
+                "required",
+                "in:".implode(",",array_keys($this->catalogo_unidad_medida))
+            ],
+            "Unidad" => [
+                "string",
+                "required",
+                "in:".implode(",",array_values($this->catalogo_unidad_medida))
+            ],
+            "ValorUnitario" => "numeric|required",
+            "Descripcion" => "string|required",
+            "Descuento" => "string",
+            
+            "Impuestos" => "array",
+
+            "NumeroPedimento" => "string",
+            "Predial" => "string",
+            
+            "Partes" => "array",
+        ];
+
+        $this->rules_for_concept_parts = [
+            "ClaveProdServ" => "string|required",
+            "NoIdentificacion" => "string",
+            "Cantidad" => "integer|required",
+            "unidad" => [
+                "string",
+                "required",
+                "in:".implode(",",array_values($this->catalogo_unidad_medida))
+            ],
+            "ValorUnitario" => "numeric|required",
+            "Descripcion" => "string|required",
+        ];
+
+        $this->rules_for_taxes = [
+
+            "Traslados" => "array|required",
+            "Retenidos" => "array",
+            "Locales" => "array",
+        ];        
+
+        $this->rules_for_transferred_taxes = [
+
+            "Base" => "numeric|required",
+            "Impuesto" => [
+                "string",
+                "required",
+                "in:".implode(",",array_keys($this->catalogo_impuesto_traslados))
+            ],
+            "TipoFactor" => [
+                "string",
+                "required",
+                "in:".implode(",",$this->catalogo_tipo_factor)
+            ],
+            "TasaOCuota" => "numeric|required",
+            "Importe" => "numeric|required|min:1",
+        ];
+
+        $this->rules_for_withheld_taxes = [
+
+            "Base" => "numeric|required",
+            "Impuesto" => [
+                "string",
+                "required",
+                "in:".implode(",",array_keys($this->catalogo_impuesto_retenciones))
+            ],
+            "TipoFactor" => [
+                "string",
+                "required",
+                "in:".implode(",",$this->catalogo_tipo_factor)
+            ],
+            "TasaOCuota" => "numeric|required",
+            "Importe" => "numeric|required|min:1",            
+        ];
+
+        $this->rules_for_local_taxes = [
+
+            "Impuesto" => [
+                "string",
+                "required",
+                "in:".implode(",",$this->impuestos_locales)
+            ],
+            "TasaOCuota" => "numeric|required",
+        ];
+
+        $this->rules_for_arrays = [
+
+            "Conceptos" => [
+                "rules" => $this->rules_for_concepts,
+                "Impuestos" => [
+                    "rules" => $this->rules_for_taxes,
+                    "Traslados" => [
+                        "rules" => $this->rules_for_transferred_taxes
+                    ],
+                    "Retenidos" => [
+                        "rules" => $this->rules_for_withheld_taxes
+                    ],
+                    "Locales" => [
+                        "rules" => $this->rules_for_local_taxes
+                    ],
+                ],
+                "Partes" => [
+                    "rules" => $this->rules_for_concept_parts
+                ]
+            ],
+            "CfdiRelacionados" => [
+                "rules" => $this->rules_for_related_cfdis
+            ]
         ];
 
     }
@@ -464,6 +516,11 @@ class Facturapuntocom
 
         list($resultado,$resultados_validacion) = $this->validateData($data,$this->rules_for_cfdi);
 
+        //Validacion para arrays dentro de la variable $data
+        $errors = [];
+        $errors = $this->validateArrays("Conceptos",$data["Conceptos"]);
+
+
         if($resultado){
 
             return $this->sendRequest('POST',"v3/cfdi33/create",$resultados_validacion);
@@ -471,6 +528,43 @@ class Facturapuntocom
         }else{
 
             return $this->response(false,"Errores de validacion",$resultados_validacion);
+
+        }
+
+    }
+
+    public function validateArrays($nodo,$data){
+
+        $blocks = explode(".", $nodo);
+        
+        $validaciones = $this->rules_for_arrays;
+        foreach ($blocks as $block) {
+            $validaciones = $validaciones[$block];
+        }
+        
+        $results = [];
+        foreach($validaciones as $key => $validacion){
+
+            if($key == "rules"){
+
+                if(!empty($data)){
+
+                    list($resultado,$resultados_validacion) = $this->validateData($data,$this->rules_for_client);
+                    if(!$resultado){
+
+                        $results = array_merge($results,$resultados_validacion);
+
+                    }
+                }
+
+            }else{
+
+                if(!empty($data[$key])){
+
+                    $results = $this->validateArrays($nodo.".".$key,$data[$key]);
+                }                
+
+            }
 
         }
 
