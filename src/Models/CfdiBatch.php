@@ -180,6 +180,8 @@ class CfdiBatch extends Model
 
         $results["percentage_processed"] = round($results["total_processed"] * 100 / $results["total_elements"]);
 
+        return $results;
+
     }
 
 }
