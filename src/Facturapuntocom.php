@@ -136,7 +136,7 @@ class Facturapuntocom
                 "in:".implode(",",$this->tipos_documento)
             ],
 
-            "Conceptos" => "array|required",
+            "Conceptos" => "array|required|size:1",
             
             "UsoCFDI" => [
                 "string",
@@ -203,7 +203,7 @@ class Facturapuntocom
             "Descripcion" => "string|required",
             "Descuento" => "string",
             
-            "Impuestos" => "array",
+            "Impuestos" => "array|required|size:1",
 
             "NumeroPedimento" => "string",
             "Predial" => "string",
@@ -521,11 +521,15 @@ class Facturapuntocom
         $errors = $this->validateArrays("Conceptos",$data["Conceptos"]);
 
 
-        if($resultado){
+        if($resultado && empty($errors)){
 
             return $this->sendRequest('POST',"v3/cfdi33/create",$resultados_validacion);
 
         }else{
+
+            $resultados_validacion = (!$resultado) 
+                ? array_merge($resultados_validacion,$errors)
+                : $errors;
 
             return $this->response(false,"Errores de validacion",$resultados_validacion);
 
@@ -543,30 +547,41 @@ class Facturapuntocom
         }
         
         $results = [];
-        foreach($validaciones as $key => $validacion){
 
-            if($key == "rules"){
 
-                if(!empty($data)){
+        if($this->isAssociativeArray($data)){
+            $data = [$data];
+        }
 
-                    list($resultado,$resultados_validacion) = $this->validateData($data,$this->rules_for_client);
-                    if(!$resultado){
+        foreach($data as $item_data){
 
-                        $results = array_merge($results,$resultados_validacion);
+            foreach($validaciones as $key => $validacion){
 
+                if($key == "rules"){
+
+                    if(!empty($item_data)){
+
+                        list($resultado,$resultados_validacion) = $this->validateData($item_data,$validacion);
+                        if(!$resultado){
+
+                            $results = array_merge($results,$resultados_validacion);
+
+                        }
                     }
+
+                }else{
+
+                    if(!empty($item_data[$key])){
+
+                        $results = $this->validateArrays($nodo.".".$key,$item_data[$key]);
+                    }                
+
                 }
 
-            }else{
-
-                if(!empty($data[$key])){
-
-                    $results = $this->validateArrays($nodo.".".$key,$data[$key]);
-                }                
-
             }
-
         }
+
+        return $results;
 
     }
 
@@ -651,6 +666,12 @@ class Facturapuntocom
             return $this->response(false,"No se obtuvo una respuesta correcta del servidor");   
         
         }
+    }
+
+    private function isAssociativeArray(array $arr)
+    {
+        if (array() === $arr) return false;
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
 }
