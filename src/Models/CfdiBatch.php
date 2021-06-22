@@ -171,7 +171,7 @@ class CfdiBatch extends Model
 
         $results["total_elements"] = $elements->count();
         $results["total_pending"] = $elements->filter(function($item){
-            return empty($item->results);
+            return empty($item["results"]);
         })->count();
 
         $results["total_processed"] = $elements->count() - $results["total_pending"];
