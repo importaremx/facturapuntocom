@@ -482,7 +482,7 @@ class Facturapuntocom
 
         if($resultado){
 
-            return ;
+            return $this->sendRequest('POST',"v1/clients/".$uid."/update",$resultados_validacion);
 
         }else{
 

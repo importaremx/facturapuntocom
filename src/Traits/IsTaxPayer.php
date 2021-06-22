@@ -69,8 +69,14 @@ trait IsTaxPayer
             );
     }
 
+    protected function dataMapping(){
+
+    }
+
     public function createOrUpdateTaxPayer(){
 
+        $this->dataMapping();
+        
         $data = [];
         foreach($this->overridables as $overridable){
 

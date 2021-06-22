@@ -48,8 +48,14 @@ trait HasCfdi
 
     protected $contiene_iva = false;
 
+    protected function dataMapping(){
+
+    }
+
     public function createCfdi(){
 
+        $this->dataMapping();
+        
         $data = $this->default_data;
 
         foreach($this->overridables as $overridable => $requerido){
