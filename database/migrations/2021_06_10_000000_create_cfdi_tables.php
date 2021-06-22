@@ -26,6 +26,14 @@ class CreateCfdiTables extends Migration
             $table->timestamps();
         });
 
+        Schema::create('importaremx_cfdi_batch', function (Blueprint $table) {
+            $table->increments('id');
+            $table->text('elements')->nullable(false);
+            $table->string('element_class')->nullable(false);
+            $table->boolean('finished')->default(false);
+            $table->timestamps();
+        });
+
         Schema::create('importaremx_taxpayer', function (Blueprint $table) {
 
             $table->increments('id');
