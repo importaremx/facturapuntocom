@@ -22,6 +22,10 @@ class CfdiBatch extends Model
         "elements" => "json"
     ];
 
+    protected $appends = [
+        "stats"
+    ];
+
     private $next_element;
     protected $class_type;
 
@@ -89,6 +93,9 @@ class CfdiBatch extends Model
                     }
 
                 }catch(\Exception $ex){
+
+                    \Log::error($ex->getMessage());
+                    
                     return null;
                 }
 
@@ -138,7 +145,7 @@ class CfdiBatch extends Model
             ->where($this->getKeyName(),$this->{$this->getKeyName()})
             ->update(["elements" => json_encode($elements)]);
 
-        $this->refresh();
+        $this->elements = $elements;
     
     }
 
