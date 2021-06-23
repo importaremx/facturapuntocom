@@ -35,7 +35,7 @@ class CfdiBatch extends Model
             $class= app($obj->element_class);
 
             if(!in_array(HasCfdi::class, class_uses($class))){
-                throw new Exception("La clase del batch debe usar el trait HasCfdi");
+                throw new \Exception("La clase del batch debe usar el trait HasCfdi");
             }
 
             if(is_array($obj->elements)){

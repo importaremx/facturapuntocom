@@ -17,6 +17,10 @@ $ composer require importaremx/facturapuntocom
 
 ## Configuracion
 
+En config/app.php agregar el service provider:
+
+Importaremx\Facturapuntocom\FacturapuntocomServiceProvider::class,
+
 Para modificar la configuracion por default del paquete corra en la consola de php el siguiente comando:
 
 php artisan vendor:publish --provider='Importaremx\Facturapuntocom\FacturapuntocomServiceProvider'
@@ -45,6 +49,9 @@ El archivo facturapuntocom.php contiene las siguientes variables:
 
 'path_xml', valor por default "cfdi_files/xml", esta variable indica la ruta de almacenamiento dentro de la carpeta storage donde se guardarán los archivos xml de los CFDIs, se debe usar la variable FACTURACOM_PATH_XML en el archivo .env
 
+'queue_connection' variable que define la conexión al controlador de colas para la facturacion por lotes, si no se ocupará ningun driver diferente a la configuracion default de laravel esta variable se deja vacía
+
+'queue_name' variable que define el nombre de la cola en donde se publicarán los trabajos para la facturacion por lotes, si no se ocupará ningun driver diferente a la configuracion default de laravel esta variable se deja vacía
 ###Tablas en la DB
 
 para correr la migracion del paquete una vez instalado se debe ejecutar el siguiente comando.
@@ -77,32 +84,36 @@ Para modificar los valores por default del trait se puede agregar en el modelo l
         //AQUI AGREGAR LOS VALORES MODIFICADOS DEL TRAIT
         //POR EJEMPLO:
 
-        La variable $rfc_field indica qué atributo del modelo será tomado como RFC del contribuyente, por default tiene el valor 'rfc', pero lo puede modificar como se muestra en la siguiente linea
+        /*La variable $rfc_field indica qué atributo del modelo será tomado como RFC del contribuyente, por default tiene el valor 'rfc', pero lo puede modificar como se muestra en la siguiente linea*/
         
         $this->rfc_field = "rfc";
 
-        Para hacer uso de la relacion "cfdis", que obtiene todos los CFDIS generados para este usuario, se debe configurar la relacion polimorfica,
-        ejemplo
+        /*Para hacer uso de la relacion "cfdis", que obtiene todos los CFDIS generados para este usuario, se debe configurar la relacion polimorfica,
+        ejemplo*/
 
-        Un User tiene una relacion 1 a muchos con el modelo Abonos, y cada abono a su vez tiene un cfdi. para indicar esta relacion se haría como se muestra en las siguientes lineas:
+        /*Un User tiene una relacion 1 a muchos con el modelo Abonos, y cada abono a su vez tiene un cfdi. para indicar esta relacion se haría como se muestra en las siguientes lineas:*/
 
-        (Esta variable indica el modelo de donde se obtendran los CFDI, es necesario que este modelo use el trait HasCfdi que se explicará mas adelante)
+        /*(Esta variable indica el modelo de donde se obtendran los CFDI, es necesario que este modelo use el trait HasCfdi que se explicará mas adelante)*/
          $this->relatable_type = "App\Models\Abono";
 
-         (Esta variable se refiere a la columna pivote de la tabla abono)
+         /*(Esta variable se refiere a la columna pivote de la tabla abono)*/
          $this->relatable_column = "user_id";
+    }
 
+Para mapear los datos del modelo hacia factura.com, se usa la siguiente funcion en el modelo:
 
-         //Mapeo de datos del modelo
-         El siguiente array contendrá un array clave valor con los atributos necesarios para crear un contribuyente en factura.com seguido del valor, funcion anonima, o atributo de donde el modelo proveerá dicha información
+    protected function dataMapping(){
+        
+         /*Mapeo de datos del modelo
+         El siguiente array contendrá un array clave valor con los atributos necesarios para crear un contribuyente en factura.com seguido del valor, funcion anonima, o atributo de donde el modelo proveerá dicha información*/
 
         $this->taxpayer_mapping = [
-            "nombre" => $this->nombre,
-            "apellidos" => $this->apellidos,
-            "email" => "Tambien se pueden agregar valores de esta forma",
+            "nombre" => $this->name,
+            "apellidos" => "apellidos",
+            "email" => "otrocorreo@servidor.com",
             "email2" => function(){
-            	return "valor";
-            	},
+                return "funcion@anonima.com";
+                },
             "email3" => "otroemail3@email.com",
             "telefono" => "9612547499",
             "razons" => "Desarrollador ImportareMX TESTER",
@@ -140,15 +151,10 @@ use \Importaremx\Facturapuntocom\Traits\HasCfdi;
 
 Para modificar los valores por default del trait se puede agregar en el modelo la siguiente función:
 
-    public function __construct(array $attributes = array())
+    public function dataMapping(array $attributes = array())
     {
-        parent::__construct($attributes);
-
-        //AQUI AGREGAR LOS VALORES MODIFICADOS DEL TRAIT
-        //POR EJEMPLO:
-
-         //Mapeo de datos del modelo
-         El siguiente array contendrá un array clave valor con los atributos necesarios para crear un contribuyente en factura.com seguido del valor, funcion anonima, o atributo de donde el modelo proveerá dicha información
+         /*Mapeo de datos del modelo
+         El siguiente array contendrá un array clave valor con los atributos necesarios para crear un cfdi en factura.com seguido del valor, funcion anonima, o atributo de donde el modelo proveerá dicha información*/
 
     	$this->cfdi_mapping = [
 
@@ -184,3 +190,28 @@ sendMail = Envia mail a los correos registrados del contribuyente
 sendCancelRequest = solicita la cancelacion del CFDI, en algunas ocasiones la respuesta es automatica, pero es recomendable usar el metodo siguiente para revisar el status del cfdi ante el sat
 
 checkCancelRequestStatus = Revisa el estatus de la cancelacion del CFDI
+
+
+#### Creacion de cfdis por lotes
+
+El paquete ofrece un modelo para facturar por lotes:
+
+\Importaremx\Facturapuntocom\Models\CfdiBatch
+
+Espera los siguientes parametros:
+
+elements: es un array de enteros, Id's de los elementos a generar cfdi
+element_class: es la clase del modelo en la que se generarán los cfdi (Es obligatorio que la clase use el Trait hasCfdi del paquete, para que se puedan generar correctamente los cfdi)
+
+El modelo contiene un atributo llamado stats que contiene información del procesamiento de datos:
+
+total_elements : El total de cfdis en el batch
+total_pending : Total de cfdis pendientes de generar
+total_processed : Total de cfdis procesados
+percentage_pending : Porcentaje de cfdis pendientes
+percentage_processed : Porcentaje de cfdis procesados
+
+El modelo contiene un atributo llamado finished que indica si se ha completado o no el procesamiento del batch
+
+Nota: El procesamiento del batch funciona con Jobs y hereda la configuracion de colas que tenga el proyecto, adicionalmente se pueden configurar en el archivo config/facturapuntocom.php las variables queue_connnection y queue_name para indicar la configuracion o driver de colas que usará el cfdibatch
+

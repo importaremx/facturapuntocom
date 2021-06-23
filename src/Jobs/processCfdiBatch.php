@@ -2,17 +2,19 @@
 
 namespace Importaremx\Facturapuntocom\Jobs;
 
-use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
+
+use Illuminate\Bus\Queueable;
 
 use Importaremx\Facturapuntocom\Models\CfdiBatch;
 
-class processCfdiBatch implements ShouldQueue
+class processCfdiBatch implements SelfHandling, ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use InteractsWithQueue, SerializesModels, Queueable;
 
     protected $batch;
     /**
