@@ -119,9 +119,20 @@ class Facturapuntocom
      
             $datos_catalogo = $this->getCatalog($nombre_catalogo);
 
-            foreach($datos_catalogo->data as $dato_cat){
-     
-                $this->{$variable}[$dato_cat->key.""] = $dato_cat->name;
+            $nombre_cache_catalogo = "cat_".$nombre_catalogo;
+
+            if(\Cache::has($nombre_cache_catalogo)){
+                
+                $this->{$variable} = (array) json_decode(\Cache::get($nombre_cache_catalogo));
+            
+            }else{
+
+                foreach($datos_catalogo->data as $dato_cat){
+         
+                    $this->{$variable}[$dato_cat->key.""] = $dato_cat->name;
+                }
+
+                $this->saveToCache($nombre_cache_catalogo,json_encode($this->{$variable}));
             }
 
         }
@@ -463,8 +474,27 @@ class Facturapuntocom
 
     public function getSeries(){
 
-        return $this->sendRequest('GET',"v1/series");           
+        if(\Cache::has('cat_series')){
 
+            return $this->response(true,"Series tomados de la caché",(array) json_decode(\Cache::get('cat_series')));
+
+        }else{
+
+            $results = $this->sendRequest('GET',"v1/series");
+
+            if($results->status){
+
+                $this->saveToCache('cat_series',json_encode($results->data));
+
+            }
+        }
+    }
+
+    public function saveToCache($clave,$value){
+
+        $expiresAt = \Carbon\Carbon::now()->addDays(15);
+        
+        \Cache::put($clave, $value, $expiresAt);
     }
 
     public function createClient($data){
