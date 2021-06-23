@@ -29,7 +29,7 @@ class CfdiBatch extends Model
     {
         parent::__construct($attributes);
 
-        $this->class_type = app($obj->element_class);
+        $this->class_type = app($this->element_class);
     }
 
     public static function boot() {
