@@ -25,6 +25,13 @@ class CfdiBatch extends Model
     private $next_element;
     protected $class_type;
 
+    public function __construct(array $attributes = array())
+    {
+        parent::__construct($attributes);
+
+        $this->class_type = app($obj->element_class);
+    }
+
     public static function boot() {
 
         parent::boot();
@@ -62,13 +69,6 @@ class CfdiBatch extends Model
             $obj->class_type = app($obj->element_class);
 
         });
-
-        static::retrieved(function($obj){
-
-            $obj->class_type = app($obj->element_class);
-
-        });
-
     } 
 
     public function getNextElement(){
