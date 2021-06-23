@@ -134,7 +134,6 @@ class Cfdi extends Model
                         break;
                 }
 
-                $this->refresh();
             }
 
             return new ClientResponse(true,"Se obtuvo correctamente la respuesta de cancelación del SAT",["cfdi_status" => $this->status]);
