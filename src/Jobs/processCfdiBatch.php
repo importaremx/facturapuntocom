@@ -47,7 +47,7 @@ class processCfdiBatch implements SelfHandling, ShouldQueue
 
             \Log::debug($err->getMessage());
 
-            $this->newDispatch();
+            $this->batch->newDispatch();
         }
 
     }

@@ -28,8 +28,6 @@ class CfdiBatch extends Model
     public function __construct(array $attributes = array())
     {
         parent::__construct($attributes);
-
-        $this->class_type = app($this->element_class);
     }
 
     public static function boot() {
@@ -64,11 +62,6 @@ class CfdiBatch extends Model
         
         });
 
-        static::saved(function($obj){
-
-            $obj->class_type = app($obj->element_class);
-
-        });
     } 
 
     public function getNextElement(){
@@ -81,7 +74,9 @@ class CfdiBatch extends Model
             
                 try{
 
-                    $obj = $this->class_type->find($id);
+                    $this->class_type = new $this->element_class;
+
+                    $obj = $this->class_type::find($id);
 
                     if(!empty($obj)){
 
