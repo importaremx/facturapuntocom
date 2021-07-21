@@ -107,17 +107,21 @@ trait IsTaxPayer
             $result = $facturapuntocom_client->updateClient($clientes_existentes->data->UID,$data);
         }else{
             $result = $facturapuntocom_client->createClient($data);
-
-            //Crear el taxpayer para este modelo
-            if($result->status){
-                TaxPayer::create([
-                    "uid" => $result->data->UID,
-                    "model_id" => $this->id,
-                    "model_type" => static::class
-                ]);
-            }
         }
 
+        //if(empty($this->taxpayer)){
+            //Crear el taxpayer para este modelo
+            if($result->status){
+                TaxPayer::updateOrCreate([
+                    "model_id" => $this->id,
+                    "model_type" => static::class
+                ],
+                [
+                    "uid" => $result->data->UID
+                ]);
+            }
+        //}
+        
         return $result;
     }
 

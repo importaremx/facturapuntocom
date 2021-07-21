@@ -85,8 +85,10 @@ trait HasCfdi
         //Calcular los valores de precio unitario e IVA
         if($this->contiene_iva){
 
-            $valor_unitario = $data["ValorUnitario"] / (1 + $data["TasaOCuota"]*1);
-            $impuesto_iva = $valor_unitario * $data["TasaOCuota"];
+            $valor_unitario = round($data["ValorUnitario"] / (1 + $data["TasaOCuota"]*1), 2);
+            //$impuesto_iva = $valor_unitario * $data["TasaOCuota"];
+            $impuesto_iva = $data["ValorUnitario"] - $valor_unitario;
+            \Log::info($valor_unitario." ".$impuesto_iva);
 
         }else{
 
@@ -111,7 +113,7 @@ trait HasCfdi
                     'Impuestos' => [
                         'Traslados' => [
                             [
-                                'Base' => $data["ValorUnitario"], 
+                                'Base' => $valor_unitario, 
                                 'Impuesto' => $data["Impuesto"], 
                                 'TipoFactor' => $data["TipoFactor"], 
                                 'TasaOCuota' => $data["TasaOCuota"], 

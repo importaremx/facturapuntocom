@@ -24,7 +24,7 @@ class Cfdi extends Model
     protected $fillable = ["xml","pdf","json","owner_id","owner_type","status"];
 
     public function getJsonAttribute(){
-        return json_decode(json_decode($this->attributes["json"]));
+        return json_decode($this->attributes["json"]);
     }
 
     public function owner()
