@@ -313,13 +313,17 @@ class Facturapuntocom
 
     }
 
-    public function __construct(){
+    public function __construct($is_sandbox = null){
 
-        $this->api_key = config('facturapuntocom.api_key','');
-        $this->secret_key = config('facturapuntocom.secret_key','');
+        if(empty($is_sandbox)){
+            $is_sandbox = config('facturapuntocom.is_sandbox',true);
+        }
+        
+        $this->api_key = config($is_sandbox ? 'facturapuntocom.api_key_sandbox' : 'facturapuntocom.api_key','');
+        $this->secret_key = config($is_sandbox ? 'facturapuntocom.secret_key_sandbox' : 'facturapuntocom.secret_key','');
         
         $this->fplugin = config('facturapuntocom.fplugin','');
-        $this->is_sandbox = config('facturapuntocom.is_sandbox',true);
+        $this->is_sandbox = $is_sandbox;
 
         $this->path_pdf = config('facturapuntocom.path_pdf','');
         $this->path_xml = config('facturapuntocom.path_xml','');
