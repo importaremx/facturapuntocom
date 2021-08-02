@@ -507,7 +507,16 @@ class Facturapuntocom
 
         if($resultado){
 
-            return $this->sendRequest('POST',"v1/clients/create",$resultados_validacion);
+            $is_in_lco = $this->checkLCO($data["rfc"]);
+
+            if($is_in_lco->status){
+                
+                return $this->sendRequest('POST',"v1/clients/create",$resultados_validacion);
+            
+            }else{
+
+                return $this->response(false,"El RFC no existe en las listas del SAT");    
+            }
 
         }else{
 
@@ -638,6 +647,12 @@ class Facturapuntocom
     public function getRepeatedClients($rfc){
 
         return $this->sendRequest('GET',"v1/clients/rfc/".$rfc);           
+
+    }
+
+    public function checkLCO($rfc){
+
+        return $this->sendRequest('GET',"v1/clients/lco/".$rfc);           
 
     }
 
