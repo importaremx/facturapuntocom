@@ -34,7 +34,7 @@ trait IsTaxPayer
     protected $rfc_field = "rfc";
 
     protected $taxpayer_mapping = [];
-	
+    
 
     protected $relatable_type = "";
     protected $relatable_column = "model_id";
@@ -73,7 +73,20 @@ trait IsTaxPayer
 
     }
 
-    public function createOrUpdateTaxPayer(){
+    public function usarURLSandbox()
+    {
+        $facturapuntocom_client = new Facturapuntocom();
+        $this->url = $facturapuntocom_client->usarURLSandboxFacturacion();
+    }
+
+    public function usarURLEntorno()
+    {
+        $facturapuntocom_client = new Facturapuntocom();
+        $this->url = $facturapuntocom_client->usarURLFacturacion();
+    }
+
+
+    public function createOrUpdateTaxPayer($sandbox){
 
         $this->dataMapping();
         
@@ -112,13 +125,24 @@ trait IsTaxPayer
         //if(empty($this->taxpayer)){
             //Crear el taxpayer para este modelo
             if($result->status){
-                TaxPayer::updateOrCreate([
-                    "model_id" => $this->id,
-                    "model_type" => static::class
-                ],
-                [
-                    "uid" => $result->data->UID
-                ]);
+                if ($sandbox) {
+                    TaxPayer::updateOrCreate([
+                        "model_id" => $this->id,
+                        "model_type" => static::class
+                    ],
+                    [
+                        "uid_sandbox" => $result->data->UID
+                    ]);
+                }
+                else{
+                    TaxPayer::updateOrCreate([
+                        "model_id" => $this->id,
+                        "model_type" => static::class
+                    ],
+                    [
+                        "uid" => $result->data->UID
+                    ]);
+                }
             }
         //}
         

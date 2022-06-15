@@ -85,6 +85,16 @@ class Facturapuntocom
         "Exento",
     ];
 
+    public function usarURLSandboxFacturacion()
+    {
+        return $this->url_sandbox;
+    }
+
+    public function usarURLFacturacion()
+    {
+        return $this->url_production;
+    }
+
     private function loadCatalogs(){
 
         if(empty($this->serie)){
@@ -507,16 +517,16 @@ class Facturapuntocom
 
         if($resultado){
 
-            $is_in_lco = $this->checkLCO($data["rfc"]);
+            //$is_in_lco = $this->checkLCO($data["rfc"]);
 
-            if($is_in_lco->status){
+            //if($is_in_lco->status){
                 
                 return $this->sendRequest('POST',"v1/clients/create",$resultados_validacion);
             
-            }else{
+            /*}else{
 
                 return $this->response(false,"El RFC no existe en las listas del SAT");    
-            }
+            }*/
 
         }else{
 
