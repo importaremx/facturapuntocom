@@ -521,8 +521,7 @@ class Facturapuntocom
             //$is_in_lco = $this->checkLCO($data["rfc"]);
 
             //if($is_in_lco->status){
-                echo "created";
-                echo json_encode($resultados_validacion);
+                
                 return $this->sendRequest('POST',"v1/clients/create",$resultados_validacion);
             
             /*}else{
@@ -645,8 +644,7 @@ class Facturapuntocom
         list($resultado,$resultados_validacion) = $this->validateData($data,$this->rules_for_client);
 
         if($resultado){
-            echo "updated=".$uid;
-            echo json_encode($resultados_validacion);
+            
             return $this->sendRequest('POST',"v1/clients/".$uid."/update",$resultados_validacion);
 
         }else{
