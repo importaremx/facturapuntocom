@@ -106,6 +106,12 @@ trait IsTaxPayer
 
         $facturapuntocom_client = new Facturapuntocom();
 
+        if($sandbox){
+            $facturapuntocom_client->usarURLSandboxFacturacion();
+        }
+        else{
+            $facturapuntocom_client->usarURLFacturacion();
+        }
 
         $rfc = $this->{$this->rfc_field} ?: $data[$this->rfc_field];
 
@@ -117,18 +123,15 @@ trait IsTaxPayer
         $clientes_existentes = $facturapuntocom_client->getClients($rfc);
 
         if(!empty($clientes_existentes->data)){
-            
             $result = $facturapuntocom_client->updateClient($clientes_existentes->data->UID,$data);
         }else{
             $result = $facturapuntocom_client->createClient($data);
         }
-        \Log::info('Resultado update');
-        \Log::info(json_encode($result));
+
         //if(empty($this->taxpayer)){
             //Crear el taxpayer para este modelo
             if($result->status){
                 if ($sandbox) {
-                    \Log::info('inicia sandbox');
                     TaxPayer::updateOrCreate([
                         "model_id" => $this->id,
                         "model_type" => static::class
@@ -136,7 +139,6 @@ trait IsTaxPayer
                     [
                         "uid_sandbox" => $result->data->UID
                     ]);
-                    \Log::info('termina sandbox'.$this->id);
                 }
                 else{
                     TaxPayer::updateOrCreate([
