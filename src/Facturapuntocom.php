@@ -85,6 +85,16 @@ class Facturapuntocom
         "Exento",
     ];
 
+    public function usarURLSandboxFacturacion()
+    {
+        return $this->url_sandbox;
+    }
+
+    public function usarURLFacturacion()
+    {
+        return $this->url_production;
+    }
+
     private function loadCatalogs(){
 
         if(empty($this->serie)){
@@ -507,6 +517,7 @@ class Facturapuntocom
 
         if($resultado){
 
+
             //$is_in_lco = $this->checkLCO($data["rfc"]);
 
             //if($is_in_lco->status){
@@ -633,7 +644,7 @@ class Facturapuntocom
         list($resultado,$resultados_validacion) = $this->validateData($data,$this->rules_for_client);
 
         if($resultado){
-
+            echo json_encode($resultados_validacion);
             return $this->sendRequest('POST',"v1/clients/".$uid."/update",$resultados_validacion);
 
         }else{

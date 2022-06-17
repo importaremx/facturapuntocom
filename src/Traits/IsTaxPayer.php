@@ -73,7 +73,20 @@ trait IsTaxPayer
 
     }
 
-    public function createOrUpdateTaxPayer(){
+    public function usarURLSandbox()
+    {
+        $facturapuntocom_client = new Facturapuntocom();
+        $this->url = $facturapuntocom_client->usarURLSandboxFacturacion();
+    }
+
+    public function usarURLEntorno()
+    {
+        $facturapuntocom_client = new Facturapuntocom();
+        $this->url = $facturapuntocom_client->usarURLFacturacion();
+    }
+
+
+    public function createOrUpdateTaxPayer($sandbox){
 
         $this->dataMapping();
         
@@ -93,6 +106,7 @@ trait IsTaxPayer
 
         $facturapuntocom_client = new Facturapuntocom();
 
+
         $rfc = $this->{$this->rfc_field} ?: $data[$this->rfc_field];
 
         if(empty($rfc)){
@@ -108,17 +122,31 @@ trait IsTaxPayer
         }else{
             $result = $facturapuntocom_client->createClient($data);
         }
-
+        \Log::info('Resultado update');
+        \Log::info(json_encode($result));
         //if(empty($this->taxpayer)){
             //Crear el taxpayer para este modelo
             if($result->status){
-                TaxPayer::updateOrCreate([
-                    "model_id" => $this->id,
-                    "model_type" => static::class
-                ],
-                [
-                    "uid" => $result->data->UID
-                ]);
+                if ($sandbox) {
+                    \Log::info('inicia sandbox');
+                    TaxPayer::updateOrCreate([
+                        "model_id" => $this->id,
+                        "model_type" => static::class
+                    ],
+                    [
+                        "uid_sandbox" => $result->data->UID
+                    ]);
+                    \Log::info('termina sandbox'.$this->id);
+                }
+                else{
+                    TaxPayer::updateOrCreate([
+                        "model_id" => $this->id,
+                        "model_type" => static::class
+                    ],
+                    [
+                        "uid" => $result->data->UID
+                    ]);
+                }
             }
         //}
         
