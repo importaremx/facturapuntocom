@@ -85,16 +85,6 @@ class Facturapuntocom
         "Exento",
     ];
 
-    public function usarURLSandboxFacturacion()
-    {
-        return $this->url_sandbox;
-    }
-
-    public function usarURLFacturacion()
-    {
-        return $this->url_production;
-    }
-
     private function loadCatalogs(){
 
         if(empty($this->serie)){

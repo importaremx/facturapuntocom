@@ -73,20 +73,7 @@ trait IsTaxPayer
 
     }
 
-    public function usarURLSandbox()
-    {
-        $facturapuntocom_client = new Facturapuntocom();
-        $this->url = $facturapuntocom_client->usarURLSandboxFacturacion();
-    }
-
-    public function usarURLEntorno()
-    {
-        $facturapuntocom_client = new Facturapuntocom();
-        $this->url = $facturapuntocom_client->usarURLFacturacion();
-    }
-
-
-    public function createOrUpdateTaxPayer($sandbox){
+    public function createOrUpdateTaxPayer(){
 
         $this->dataMapping();
         
@@ -125,24 +112,13 @@ trait IsTaxPayer
         //if(empty($this->taxpayer)){
             //Crear el taxpayer para este modelo
             if($result->status){
-                if ($sandbox) {
-                    TaxPayer::updateOrCreate([
-                        "model_id" => $this->id,
-                        "model_type" => static::class
-                    ],
-                    [
-                        "uid_sandbox" => $result->data->UID
-                    ]);
-                }
-                else{
-                    TaxPayer::updateOrCreate([
-                        "model_id" => $this->id,
-                        "model_type" => static::class
-                    ],
-                    [
-                        "uid" => $result->data->UID
-                    ]);
-                }
+                TaxPayer::updateOrCreate([
+                    "model_id" => $this->id,
+                    "model_type" => static::class
+                ],
+                [
+                    "uid" => $result->data->UID
+                ]);
             }
         //}
         
