@@ -11,7 +11,7 @@ class TaxPayer extends Model
 
     protected $table = "importaremx_taxpayer";
 
-    protected $fillable = ["uid","model_id","model_type"];
+    protected $fillable = ["uid_sandbox","uid","model_id","model_type"];
 
 
     public function model()
